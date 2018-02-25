@@ -99,3 +99,39 @@ describe('GET /todos/:id',()=>{
       .end(done)
   })
 })
+
+describe('DELETE /todos/:id',()=>{
+
+  it('Should delete havind id',(done)=>{
+    request(app)
+      .delete('/todos/5a916a43cf2d372a0886c9dc')
+      .expect(200)
+      .expect((res)=>{
+        expect(res.body.todo._id).toBe('5a916a43cf2d372a0886c9dc')
+      })
+      .end((err,res)=>{
+        if(err){
+          return done(err)
+        }
+
+        Todo.findById('5a916a43cf2d372a0886c9dc').then((doc)=>{
+          expect(doc).toNotExist()
+          done()
+        }).catch((e)=>done(e))
+      })
+  })
+
+  it('Should return 404 if not found',(done)=>{
+    request(app)
+      .delete('/todos/5a916a43cf2d372a0886c9fc')
+      .expect(404)
+      .end(done)
+  })
+
+  it('Should return 400 if the id is invalid',(done)=>{
+    request(app)
+      .delete('/todos/5a916a43cf2d372a0886c9dcsd')
+      .expect(400)
+      .end(done)
+  })
+})
